@@ -1,0 +1,900 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Rule Execution API for Cloud Foundry",
+    "version": "v2",
+    "description": "This API provides functionality to work with the execution of business rules. For example, you can deploy and invoke a rule service."
+  },
+  "externalDocs": {
+    "description": "Business Rules Documentation",
+    "url": "https://help.sap.com/viewer/product/BUSINESS_RULES"
+  },
+  "basePath": "/rules-service/rest",
+  "consumes": [
+    "application/json"
+  ],
+  "host": "hostname",
+  "x-sap-shortText": "Deploy, Search and Invoke Business Rules for your organization",
+  "x-servers": [
+    {
+      "url": "https://{runtimeurl}/rules-service/rest",
+      "description": "Business Rules Execution REST API Endpoint",
+      "templates": {
+        "runtimeurl": {
+          "description": "Business Rules Runtime URL"
+        },
+        "tokenurl": {
+          "description": "Business Rules Runtime Token URL"
+        }
+      }
+    }
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "schemes": [
+    "https"
+  ],
+  "securityDefinitions": {
+    "OAuth2_ClientCredentials": {
+      "type": "oauth2",
+      "flow": "application",
+      "tokenUrl": "https://{tokenurl}/oauth/token",
+      "scopes": {}
+    }
+  },
+  "security": [
+    {
+      "OAuth2_ClientCredentials": []
+    }
+  ],
+  "paths": {
+    "/v2/workingset-rule-definitions": {
+      "post": {
+        "tags": [
+          "Deploy/Undeploy Rule Service"
+        ],
+        "summary": "Deploy a working set rule service.",
+        "description": "Deploys a working set rule service to the business rules runtime. The rule service should be in active state to deploy it. Redeployment is also supported.",
+        "operationId": " deployWorkingsetRuleService",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "JSON payload of rule service details to be deployed",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/WorkingsetRuleServiceDefinitionInput"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Deployment of the rule service succeeded.",
+            "schema": {
+              "$ref": "#/definitions/WorkingsetRuleServiceDefinitionResult"
+            }
+          },
+          "400": {
+            "description": "Deployment of the rule service failed.",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            },
+            "examples": {
+              "application/json": {
+                "error": {
+                  "code": "bpm.rulesruntime.invalidPayload",
+                  "message": "<message related to the failure>",
+                  "details": []
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An exception occurred during deployment.",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            },
+            "examples": {
+              "application/json": {
+                "error": {
+                  "code": "bpm.rulesruntime.error",
+                  "message": "<message related to the failure>",
+                  "details": []
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Deploy/Undeploy Rule Service"
+        ],
+        "summary": "Retrive all the deployed working set rule services.",
+        "description": "Retrives the metadata of all the deployed working set rule services from business rules runtime.",
+        "operationId": "readWorkingsetRuleServices",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Request for reading the deployed rule services from working set across project is completed successfully.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/WorkingsetRuleServiceDefinitionResult"
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. User does not have required authorization to execute this request."
+          }
+        }
+      }
+    },
+    "/v2/workingset-rule-definitions/{RuleServiceId}": {
+      "get": {
+        "tags": [
+          "Deploy/Undeploy Rule Service"
+        ],
+        "summary": "Retrive a deployed working set rule service",
+        "description": "Retrives the metadata of a deployed working set rule service with the specified rule service ID from the business rules runtime.",
+        "operationId": "readWorkingsetRuleService",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "RuleServiceId",
+            "required": true,
+            "type": "string",
+            "description": "Id of the RuleService"
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Request for reading a deployed rule services from working set is completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/WorkingsetRuleServiceDefinitionResult"
+            }
+          },
+          "401": {
+            "description": "Unauthorized. User does not have required authorization to execute this request."
+          },
+          "404": {
+            "description": "Object not found. The entity you are trying to read does not exist.",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            },
+            "examples": {
+              "application/json": {
+                "error": {
+                  "code": "bpm.rulesruntime.objectnotfound",
+                  "message": "<message related to the failure>",
+                  "details": []
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Deploy/Undeploy Rule Service"
+        ],
+        "summary": "Undeploy the working set rule service",
+        "description": "Undeploys the working set rule service with specified rule service ID from the business rules runtime.",
+        "operationId": "undeployWorkingsetRuleService",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "RuleServiceId",
+            "required": true,
+            "type": "string",
+            "description": "Id of the RuleService"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Undeployment of the rule service succeeded."
+          },
+          "400": {
+            "description": "Undeployment of the rule service failed.",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            },
+            "examples": {
+              "application/json": {
+                "error": {
+                  "code": "bpm.rulesruntime.undeployerror",
+                  "message": "<message related to the failure>",
+                  "details": []
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Object not found. The entity you are trying to Undeploy does not exist.",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            },
+            "examples": {
+              "application/json": {
+                "error": {
+                  "code": "bpm.rulesruntime.objectnotfound",
+                  "message": "<message related to the failure>",
+                  "details": []
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/rule-definitions": {
+      "post": {
+        "tags": [
+          "Deploy/Undeploy Rule Service"
+        ],
+        "summary": "Deploy a version of a rule service",
+        "description": "Deploys a version of a rule service to the business rules runtime. Rule service versions are read only and redeployment of the same version is not possible.",
+        "operationId": "deployRuleServiceVersion",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "JSON payload of rule service details to be deployed",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RuleServiceVersionDefinitionInput"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Deployment of the rule service succeeded.",
+            "schema": {
+              "$ref": "#/definitions/RuleServiceVersionDefinitionResult"
+            }
+          },
+          "400": {
+            "description": "Deployment of the rule service failed.",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            },
+            "examples": {
+              "application/json": {
+                "error": {
+                  "code": "bpm.rulesruntime.invalidPayload",
+                  "message": "<message related to the failure>",
+                  "details": []
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Object not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            },
+            "examples": {
+              "application/json": {
+                "error": {
+                  "code": "bpm.rulesruntime.objectnotfound",
+                  "message": "The rule service with given version does not exist"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            },
+            "examples": {
+              "application/json": {
+                "error": {
+                  "code": "bpm.rulesruntime.versionalreadyexcist",
+                  "message": "Rule service version is already deployed"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/rule-definitions/{RuleServiceId}/versions": {
+      "get": {
+        "tags": [
+          "Deploy/Undeploy Rule Service"
+        ],
+        "summary": "Retrive all versions of a deployed rule service",
+        "description": "Retrives the list of all deployed rule service versions' metadata for the specified rule service ID from business rules runtime.",
+        "operationId": "readRuleServiceVersions",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "RuleServiceId",
+            "required": true,
+            "type": "string",
+            "description": "Id of the RuleService"
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Request for reading the rule service versions deployed is completed successfully.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/RuleServiceVersionDefinitionResult"
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. User does not have required authorization to execute this request."
+          },
+          "404": {
+            "description": "Object not found. The entity you are trying to read does not exist.",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            },
+            "examples": {
+              "application/json": {
+                "error": {
+                  "code": "bpm.rulesruntime.objectnotfound",
+                  "message": "<message related to the failure>",
+                  "details": []
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/rule-definitions/{RuleServiceId}/versions/{RuleServiceVersion}": {
+      "get": {
+        "tags": [
+          "Deploy/Undeploy Rule Service"
+        ],
+        "summary": "Retrive a deployed rule service version",
+        "description": "Retrives the metadata of a deployed rule service with the specified rule service ID and rule service version from business rules runtime.",
+        "operationId": "readRuleServiceVersion",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "RuleServiceId",
+            "required": true,
+            "type": "string",
+            "description": "Id of the RuleService"
+          },
+          {
+            "in": "path",
+            "name": "RuleServiceVersion",
+            "required": true,
+            "type": "string",
+            "description": "Version of the RuleService"
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Request for reading a deployed rule services of given version is completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/RuleServiceVersionDefinitionResult"
+            }
+          },
+          "401": {
+            "description": "Unauthorized. User does not have required authorization to execute this request."
+          },
+          "404": {
+            "description": "Object not found. The entity you are trying to read does not exist.",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            },
+            "examples": {
+              "application/json": {
+                "error": {
+                  "code": "bpm.rulesruntime.objectnotfound",
+                  "message": "<message related to the failure>",
+                  "details": []
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Deploy/Undeploy Rule Service"
+        ],
+        "summary": "Undeploy a version of a rule service",
+        "description": "Undeploys the rule service with the specified rule service ID and rule service version from the business rules runtime.",
+        "operationId": "undeployRuleServiceVersion",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "RuleServiceId",
+            "required": true,
+            "type": "string",
+            "description": "Id of the RuleService"
+          },
+          {
+            "in": "path",
+            "name": "RuleServiceVersion",
+            "required": true,
+            "type": "string",
+            "description": "Version of the RuleService"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Undeployment of the rule service succeeded."
+          },
+          "404": {
+            "description": "Object not found. The entity you are trying to Undeploy does not exist.",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            },
+            "examples": {
+              "application/json": {
+                "error": {
+                  "code": "bpm.rulesruntime.objectnotfound",
+                  "message": "The rule service with given id and version does not exist."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/rule-services": {
+      "post": {
+        "tags": [
+          "Invoke Rule Service"
+        ],
+        "summary": "Invoke a revision or version of a rule service",
+        "description": "Invokes the deployed rule service with the specified revision or version and a specified vocabulary input.<br>If  *RuleServiceRevision* is specified, the highest semantic version of the revision is invoked.<br>",
+        "operationId": "invokeRuleServiceVersion",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "JSON payload of the input to rule servie execution.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RuleServiceVersionInvocationInput"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful invocation of rule service.",
+            "schema": {
+              "$ref": "#/definitions/RuleServiceResult"
+            }
+          },
+          "400": {
+            "description": "Bad Request.",
+            "examples": {
+              "application/json": {
+                "error": {
+                  "code": "bpm.rulesruntime.typemismatch",
+                  "message": "A table Type data object should be provided as an Array and an  structure to be provided as simple json object."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Object not found. The entity you are trying to invoke does not exist.",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            },
+            "examples": {
+              "application/json": {
+                "error": {
+                  "code": "bpm.rulesruntime.objectnotfound",
+                  "message": "The rule service with given id, version or revision does not exist.'"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/workingset-rule-services": {
+      "post": {
+        "tags": [
+          "Invoke Rule Service"
+        ],
+        "summary": "Invoke a working set rule service",
+        "description": "Invokes the deployed working set of rule service with a specified vocabulary input.",
+        "operationId": "invokeWorkingsetRuleService",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "JSON payload of the input to rule servie execution.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/WorkingsetRuleServiceInvocationInput"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful invocation of rule service.",
+            "schema": {
+              "$ref": "#/definitions/RuleServiceResult"
+            }
+          },
+          "400": {
+            "description": "Bad Request.",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            },
+            "examples": {
+              "application/json": {
+                "error": {
+                  "code": "bpm.rulesruntime.typemismatch",
+                  "message": "A table Type data object should be provided as an Array and an  structure to be provided as simple json object."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Object not found. The entity you are trying to invoke does not exist.",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            },
+            "examples": {
+              "application/json": {
+                "error": {
+                  "code": "bpm.rulesruntime.objectnotfound",
+                  "message": "The rule service with given id does not exist."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/xsrf-token": {
+      "get": {
+        "tags": [
+          "XSRF Handling"
+        ],
+        "summary": "Requests a new XSRF token.",
+        "description": "Requests a new XSRF token for a session. This API does not generate xsrf token for OAuth based authentication.",
+        "operationId": "fetchXSRFToken",
+        "parameters": [
+          {
+            "description": "To retrieve a new XSRF token, the value of the header must be set to Fetch.",
+            "in": "header",
+            "name": "X-CSRF-Token",
+            "required": true,
+            "type": "string",
+            "default": "Fetch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The header provides the XSRF token for this session.",
+            "headers": {
+              "X-CSRF-Token": {
+                "description": "XSRF token that can be used for all modifying requests within the same session.",
+                "type": "string"
+              }
+            }
+          },
+          "403": {
+            "description": "Access forbidden. You did not have the required permissions to access the resource."
+          },
+          "500": {
+            "description": "Exception occurred while processing the request."
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "WorkingsetRuleServiceDefinitionInput": {
+      "type": "object",
+      "properties": {
+        "RuleServiceId": {
+          "type": "string",
+          "description": "Id of the RuleService"
+        }
+      },
+      "required": [
+        "RuleServiceId"
+      ],
+      "example": {
+        "RuleServiceId": "439afea5aef1422681f78cce66c9aa90"
+      }
+    },
+    "RuleServiceVersionDefinitionInput": {
+      "type": "object",
+      "properties": {
+        "RuleServiceId": {
+          "type": "string",
+          "description": "Id of the rule service"
+        },
+        "RuleServiceVersion": {
+          "type": "string",
+          "description": "Version Id of rule service"
+        }
+      },
+      "required": [
+        "RuleServiceId",
+        "RuleServiceVersion"
+      ],
+      "example": {
+        "RuleServiceId": "439afea5aef1422681f78cce66c9aa90",
+        "RuleServiceVersion": "000000000000000001"
+      }
+    },
+    "WorkingsetRuleServiceDefinitionResult": {
+      "type": "object",
+      "properties": {
+        "RuleServiceId": {
+          "type": "string",
+          "description": "Id of the rule service"
+        },
+        "RuleServiceName": {
+          "type": "string",
+          "description": "Name of rule service"
+        },
+        "ProjectName": {
+          "type": "string",
+          "description": "Project name the rule service"
+        },
+        "CreatedBy": {
+          "type": "string",
+          "description": "Created by of rule service"
+        },
+        "CreatedOn": {
+          "type": "string",
+          "description": "Date of created on for the rule service"
+        },
+        "ChangedOn": {
+          "type": "string",
+          "description": "Date of changed on for rule service"
+        },
+        "ChangedBy": {
+          "type": "string",
+          "description": "Changed by of rule service"
+        }
+      },
+      "example": {
+        "RuleServiceId": "0207ff52b2954a84a9d50fa593812487",
+        "RuleServiceName": "Discount",
+        "ProjectName": "ShoppingCart",
+        "CreatedBy": "LORIN",
+        "CreatedOn": "2018-11-26T10:21:49Z",
+        "ChangedBy": "LORIN",
+        "ChangedOn": "2018-11-27T10:21:49Z"
+      }
+    },
+    "RuleServiceVersionDefinitionResult": {
+      "type": "object",
+      "properties": {
+        "RuleServiceId": {
+          "type": "string",
+          "description": "Id of the rule service"
+        },
+        "RuleServiceName": {
+          "type": "string",
+          "description": "Name of rule service"
+        },
+        "ProjectName": {
+          "type": "string",
+          "description": "Project name the rule service"
+        },
+        "RuleServiceVersion": {
+          "type": "string",
+          "description": "Version of rule service"
+        },
+        "RuleServiceRevision": {
+          "type": "string",
+          "description": "Revision of the rule service"
+        },
+        "CreatedOn": {
+          "type": "string",
+          "description": "Date of created on for rule service"
+        },
+        "CreatedBy": {
+          "type": "string",
+          "description": "Created by of rule service"
+        }
+      },
+      "example": {
+        "RuleServiceId": "0207ff52b2954a84a9d50fa593812487",
+        "RuleServiceName": "Discount",
+        "ProjectName": "ShoppingCart",
+        "RuleServiceVersion": "000000000000000001",
+        "RuleServiceRevision": "Tax",
+        "CreatedBy": "LORIN",
+        "CreatedOn": "2018-11-26T10:21:49Z"
+      }
+    },
+    "RuleServiceVersionInvocationInput": {
+      "type": "object",
+      "properties": {
+        "RuleServiceId": {
+          "type": "string",
+          "description": "Id of the rule service"
+        },
+        "RuleServiceRevision": {
+          "type": "string",
+          "description": "Revision of the rule service"
+        },
+        "RuleServiceVersion": {
+          "type": "string",
+          "description": "Version of the rule service"
+        },
+        "Vocabulary": {
+          "type": "array",
+          "description": "Input vocabulary for rule service",
+          "items": {
+            "type": "object"
+          }
+        }
+      },
+      "required": [
+        "RuleServiceId"
+      ],
+      "example": {
+        "RuleServiceId": "0207ff52b2954a84a9d50fa593812487",
+        "RuleServiceRevision": "Tax",
+        "Vocabulary": [
+          {
+            "Employee": {
+              "id": "LORIN",
+              "name": "John",
+              "age": "32"
+            },
+            "Employer": {
+              "id": "001",
+              "name": "SAP"
+            }
+          }
+        ]
+      }
+    },
+    "WorkingsetRuleServiceInvocationInput": {
+      "type": "object",
+      "properties": {
+        "RuleServiceId": {
+          "type": "string",
+          "description": "Id of the rule service"
+        },
+        "Vocabulary": {
+          "type": "array",
+          "description": "Input vocabulary for rule service",
+          "items": {
+            "type": "object"
+          }
+        }
+      },
+      "required": [
+        "RuleServiceId"
+      ],
+      "example": {
+        "RuleServiceId": "0207ff52b2954a84a9d50fa593812487",
+        "Vocabulary": [
+          {
+            "Employee": {
+              "id": "LORIN",
+              "name": "John",
+              "age": "32"
+            },
+            "Employer": {
+              "id": "001",
+              "name": "SAP"
+            }
+          }
+        ]
+      }
+    },
+    "RuleServiceResult": {
+      "type": "object",
+      "properties": {
+        "Result": {
+          "type": "array",
+          "description": "Result for rule service invocation",
+          "items": {
+            "type": "object"
+          }
+        }
+      },
+      "example": {
+        "Result": [
+          {
+            "EmployeeDiscount": {
+              "name": "John",
+              "discount": "10"
+            }
+          }
+        ]
+      }
+    },
+    "ErrorMessage": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string",
+              "description": "Error code"
+            },
+            "message": {
+              "type": "string",
+              "description": "Description of the error"
+            },
+            "details": {
+              "type": "array",
+              "description": "Details of the error",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "severity": {
+                    "type": "string",
+                    "description": "severity of the problecm. for example, error or warning etc."
+                  },
+                  "message": {
+                    "type": "string",
+                    "description": "details of the problem."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

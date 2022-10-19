@@ -1,0 +1,38 @@
+{
+  "name": "@cit-focus/sap-cloud-sdk-business-rules-service-cf",
+  "version": "0.1.0",
+  "description": "SAP Business Rules Service on Cloud Foundry - OPEN API Service",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "compile": "tsc",
+    "create-vdm-sources": "node dist/create-vdm-sources.js",
+    "lint": "eslint --ext .ts src/**",
+    "lint:fix": "eslint --ext .ts --fix src/**"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/CIT-FOCUS/sap-cloud-sdk-business-rules-service-cf"
+  },
+  "author": "Heisel, Cedric (CIT Focus)",
+  "license": "Apache 2.0",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },  
+  "dependencies": {
+    "@sap-cloud-sdk/openapi": "^2.9.0"
+  },
+  "devDependencies": {
+    "@sap-cloud-sdk/openapi-generator": "^2.9.0",
+    "@types/node": "^18.8.4",
+    "@typescript-eslint/eslint-plugin": "^5.40.0",
+    "@typescript-eslint/parser": "^5.40.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "typescript": "^4.8.4"
+  },
+  "lint-staged": {
+    "*.ts": "eslint --cache --fix"
+  }
+}
