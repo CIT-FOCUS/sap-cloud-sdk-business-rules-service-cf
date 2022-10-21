@@ -1,6 +1,6 @@
 {
   "name": "@cit-focus/sap-cloud-sdk-business-rules-service-cf",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "SAP Business Rules Service on Cloud Foundry - OPEN API Service",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
