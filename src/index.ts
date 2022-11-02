@@ -11,10 +11,3 @@ import * as brsService from './sdk-vdm-services/SAP_CF_BusinessRules_Runtime_V2'
 export {
     brsService
 }
-
-await brsService.InvokeRuleServiceApi.invokeWorkingsetRuleService({
-    RuleServiceId: '123',
-    Vocabulary: {
-        'my': 'vocabulary'
-    }
-}).execute({destinationName: 'DestinationToBRS'});
